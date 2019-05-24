@@ -23,7 +23,7 @@ unsigned long  ContadorActivaciones = 0;       //Acumula las veces que se ha act
 
 #define ledArduino 13                       //Pin para el led indicador del Arduino
 
-#define TiempoEspera 0.2*60*1000              //variable para el control de tiempos de espera  10seg
+unsigned long TiempoEspera = 1*60*1000              //variable para el control de tiempos de espera  10seg
 
 
 
@@ -48,7 +48,7 @@ void setup() {
   //Preparacion del timer que envia un mensaje avisando que esta en funcioamiento
   Timer1.initialize(5000000);                      // Activa la interrupcion cada 5 segundos
   Timer1.attachInterrupt(ConteodeTiempo);          //Activa la funcion Conteo de tiempo
-
+  imprimirPuertoSerie("Sali del setup");
 }
 
 
@@ -77,10 +77,12 @@ void MensajedeEstado(String mensajeIn)              // Funcion que envia el mens
 void loop() {
 
   int puerta = leerPuertas();                  //Leer sensores de puertas
-
+  imprimirPuertoSerie("lei la puerta");
   if (puerta != 0)
   {
+    imprimirPuertoSerie("envio la alerta");
     EnviarAlerta(puerta);
+    imprimirPuertoSerie("control espera");
     ControlEspera(TiempoEspera, puerta);
   }
 }
@@ -128,12 +130,11 @@ void ControlEspera(unsigned long Pausa, int numPuerta)
     
   imprimirPuertoSerie("Esperando " + String(Pausa) + " milisegundos.");
   
-  unsigned long ProximaVez = millis() + Pausa; 
-  
-  while (millis() <= ProximaVez)
+  while (millis()-tiempoAnterior<=Pausa)
   {
     //imprimirPuertoSerieNCR(".");             ////////////////////////////////
-    ParpadeoLed(numPuerta, Pausa);
+    //ParpadeoLed(numPuerta, Pausa);
+    imprimirPuertoSerie("Esperando " + String(Pausa) + " milisegundos." + String(millis());
   }
   imprimirPuertoSerie("");
   imprimirPuertoSerie("Monitoreando ahora!");
